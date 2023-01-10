@@ -1,1 +1,6 @@
 * Monoalpha Solver
+<<<<<<< HEAD
+=======
+test
+test12
+>>>>>>> origin/main
