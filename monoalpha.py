@@ -12,6 +12,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import networkx as nx
 import time
+import argparse
 
 #import cProfile
 
@@ -841,9 +842,9 @@ class Crack:
         self.calc_map_fitness()
         self.consistancies = [None for g in self.guesses]
 
-        if log:
-            print()
-            self.print_guesses()
+        # if log:
+        #     print()
+        #     self.print_guesses(dev)
 
     def get_guesses_words(self, cipher, mode="start"):
         start = time.perf_counter()
@@ -928,7 +929,7 @@ class Crack:
         print(f"Words Search took {stop-start: .1f} seconds")
         return guesses_w_words_found
 
-    def print_guesses(self, dev=True):
+    def print_guesses(self, dev):
         c = 0
         print(f"                       KEY   ngft   red    mpft   c   csts   wdft   wfreq   len")
         for i in range(len(self.guesses)):
@@ -1015,6 +1016,8 @@ def crack(cipher,  p = {
         "DEPTH_W": 17},
           dev = True):
 
+    print(p)
+    print(dev)
     # change working directory
     abspath = os.path.abspath(__file__)
     dname = os.path.dirname(abspath)
@@ -1078,7 +1081,7 @@ def crack(cipher,  p = {
         CRACK.filter(0.05,1,1)
         CRACK.get_maps_w_redundancy()
         CRACK.calc_map_fitness()
-        CRACK.print_guesses()
+        CRACK.print_guesses(dev)
 
         if dev:
             fitness = [g.ngram_fitness for g in CRACK.guesses]
@@ -1138,7 +1141,7 @@ def crack(cipher,  p = {
             avg_redundancy_consistant = [g.avg_redundancy for g in CRACK.guesses if g.consistant_key(key)]
             plt.scatter(fitness_consistant , avg_redundancy_consistant)
             plt.savefig("3-gram_fitness_avg_redundancy.jpg")
-            CRACK.print_guesses()
+            CRACK.print_guesses(dev)
 
             maps_filtered = [CRACK.maps[i] for i in range(ceil(len(CRACK.maps) * 0.6)) ]
             images = {}
@@ -1243,7 +1246,7 @@ def crack(cipher,  p = {
             plt.scatter(map_fitness_consistant , avg_redundancy_consistant, s=size_consistant)
             plt.savefig("3-gram_map_fitness_avg_redundancy_shaved.jpg")
 
-        SHAVED.print_guesses()
+        SHAVED.print_guesses(dev)
 
         if dev:
             pass
@@ -1304,7 +1307,7 @@ def crack(cipher,  p = {
         CRACK.filter(1,1,0.4)
         CRACK.get_maps_w_redundancy()
         CRACK.guesses = sorted(CRACK.guesses, key=lambda x: -x.map_fitness)
-        CRACK.print_guesses()
+        CRACK.print_guesses(dev)
 
         if dev:
             plt.figure()
@@ -1337,7 +1340,7 @@ def crack(cipher,  p = {
         CRACK.shrink()
         CRACK.get_maps_w_redundancy()
         CRACK.calc_map_fitness()
-        CRACK.print_guesses()
+        CRACK.print_guesses(dev)
 
         print("First Search")
         if dev:
@@ -1348,7 +1351,7 @@ def crack(cipher,  p = {
         word_fitness = [g.words_fitness * g.avg_word_freq for g in NEXT.guesses]
         guesses = [x for _, x in sorted(zip(word_fitness, NEXT.guesses), key=lambda x: x[0])]
         NEXT = Crack(guesses)
-        NEXT.print_guesses()
+        NEXT.print_guesses(dev)
         NEXT.get_min()
         print("min:", NEXT.min.gen_key())
         print()
@@ -1362,7 +1365,7 @@ def crack(cipher,  p = {
         NEXT_2 = Crack(next_guesses)
         NEXT_2.delete_guesses_forb_quads(cipher)
         NEXT_2.shrink()
-        NEXT_2.print_guesses()
+        NEXT_2.print_guesses(dev)
         NEXT_2.get_min()
         print("min:", NEXT_2.min.gen_key())
         print()
@@ -1373,7 +1376,7 @@ def crack(cipher,  p = {
         NEXT_3.shrink()
         NEXT_3.get_maps_w_redundancy()
         NEXT_3.shave(0.8)
-        NEXT_3.print_guesses()
+        NEXT_3.print_guesses(dev)
         NEXT_3.get_min()
         print("min:", NEXT_3.min.gen_key())
         print()
@@ -1384,7 +1387,7 @@ def crack(cipher,  p = {
         NEXT_4.shrink()
         NEXT_4.get_maps_w_redundancy()
         NEXT_4.shave(0.7)
-        NEXT_4.print_guesses()
+        NEXT_4.print_guesses(dev)
         NEXT_4.get_min()
         print("min:", NEXT_4.min.gen_key())
         print()
@@ -1418,16 +1421,75 @@ def crack(cipher,  p = {
 
 
 if __name__ == "__main__":
-    # key = 'KZVYTASCIFXORDNLPGJMBWQEHU'
-    key = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
-    # open message
-    f = open("message.txt", "r")
-    text = f.read().lower()
-    # text = "This is a secret message. But it is short. over. \
-    #        but if i try to make it longer, maybe then it can get cracked. Or i have to add more stuff to this\
-    #        i can write even more. The news are bad. Maybe this wont work. the problem is clear. the length of this text is not sufficient\
-    #        and i do not know what to write. The message is not clear."
-    cipher = encrypt(key, text).replace(" ","")
 
-    #cProfile.run('crack(parameter)')
-    crack(cipher)
+    parser = argparse.ArgumentParser(description="Try to crack the monoalphabetic cipher.")
+    parser.add_argument('filename', type=argparse.FileType('r'))
+    parser.add_argument('-d', '--dev', action='store_true',
+                        help="Activates dev mode. The code assumes that the text was encrypted using the trivial key.")
+    parser.add_argument('-p', '--parameter', nargs='*')
+
+    args = parser.parse_args()
+
+    parameters = {
+        "SEARCH_3": True,
+        "DEPTH_3": 5,
+        "FILTER_BRANCH_3": 1,
+        "FILTER_3": 1,
+        "SEARCH_2": True,
+        "DEPTH_2": 9,
+        "FILTER_BRANCH_2": 0.7,
+        "FILTER_2": 1,
+        "SEARCH_1": False,
+        "DEPTH_1": 8,
+        "FILTER_BRANCH_1": 0.5,
+        "FILTER_1": 1,
+        "DEPTH_W": 17}
+
+    if args.parameter is not None:
+        allowed_parameters = ["SEARCH_3", "DEPTH_3", "FILTER_BRANCH_3", "FILTER_3", "SEARCH_2", \
+                            "DEPTH_2", "FILTER_BRANCH_2", "FILTER_2", "SEARCH_1", "DEPTH_1", \
+                            "FILTER_BRANCH_1", "FILTER_1", "DEPTH_W"]
+
+        input_parameters = {}
+
+        for p in args.parameter:
+            key, value = p.split('=')
+            if key not in allowed_parameters:
+                raise Exception(key + " is not an allowed parameter")
+            if key.startswith("SEARCH"):
+                if value == "True":
+                    value = True
+                elif value == "False":
+                    value = False
+                else:
+                    raise Exception(f"Value of {key} needs to be either True or False.")
+            elif key.startswith("DEPTH"):
+                if not value.isdigit():
+                    raise Exception(f"Value of {key} needs to be an integer.")
+                else:
+                    value = int(value)
+                if value > 50:
+                    print("WARNING: High depths result in LONG computing times.")
+            elif key.startswith("FILTER"):
+                try:
+                    value=float(value)
+                except:
+                    raise Exception(f"Value of {key} needs to be a float between 0 and 1.")
+                if value < 0 or value > 1:
+                    raise Exception(f"Value of {key} needs to be a float between 0 and 1.")
+
+            input_parameters[key] = value
+
+        for key in input_parameters:
+            parameters[key] = input_parameters[key]
+
+
+    # open message
+    with open("message.txt", "r") as f:
+        cipher = f.read().lower()
+
+    if args.dev:
+        key = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+        cipher = encrypt(key, cipher).replace(" ","")
+
+    crack(cipher, parameters, args.dev)
