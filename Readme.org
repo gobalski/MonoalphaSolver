@@ -1,1 +1,38 @@
 * Monoalpha Solver
+
+** Usage
+#+begin_src bash
+usage: monoalpha.py [-h] [-d] [-k KEY] [-p [PARAMETER ...]] {crack,ana,dec,enc,keygen} filename
+
+Try to crack the monoalphabetic cipher.
+
+positional arguments:
+  {crack,ana,dec,enc,keygen}
+                        The mode of of the script
+  filename              input textfile
+
+options:
+  -h, --help            show this help message and exit
+  -d, --dev             Activates dev mode. The code assumes that the text was encrypted using the trivial key.
+  -k KEY, --key KEY     key for enc-/decryption.
+  -p [PARAMETER ...], --parameter [PARAMETER ...]
+#+end_src
+
+*** Parameter
+**** Defaults
+#+begin_src python
+parameters = {
+    "SEARCH_3": True,
+    "DEPTH_3": 5,
+    "FILTER_BRANCH_3": 1,
+    "FILTER_3": 1,
+    "SEARCH_2": True,
+    "DEPTH_2": 9,
+    "FILTER_BRANCH_2": 0.7,
+    "FILTER_2": 1,
+    "SEARCH_1": False,
+    "DEPTH_1": 8,
+    "FILTER_BRANCH_1": 0.5,
+    "FILTER_1": 1,
+    "DEPTH_W": 17}
+#+end_src
