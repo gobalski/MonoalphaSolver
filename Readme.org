@@ -106,12 +106,9 @@ Compare the min key with the key generated above!
 *NOTE THAT THE SUCCES OF THE CRACK HIGHLY DEPENDS ON THE PARAMETER AND ON THE GIVEN CIPHER TEXT*
 
 **** Parameter
-***** SEARCH_N
-A flag which enables the tree search for N-grams
-***** DEPTH_N
-Defines the number of recursions into the tree. For N=W this referes to the matching of words.
-***** FILTER_BRANCH_N
-A percentage that only includes that portion of the current level for the next recursion.
+- *SEARCH_N:* A flag which enables the tree search for N-grams
+- *DEPTH_N:* Defines the number of recursions into the tree. For N=W this referes to the matching of words.
+- *FILTER_BRANCH_N:* A percentage that only includes that portion of the current level for the next recursion.
 ***** Defaults
 #+begin_src python
 parameters = {
