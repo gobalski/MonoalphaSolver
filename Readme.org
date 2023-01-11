@@ -83,7 +83,7 @@ oim   | 11
 To crack the monoalphabetic cipher the script analyzes the frequencies of letters, bigrams, trigrams and quadgrams. Then it maps the most common n-grams in the english language to the most common n-grams found in the cipher text. This is done via a tree search. After that it tries to match words into the partially guessed text. The language data can be found in the data folder.
 
 #+begin_src bash
-$ ./monoalpha.py ana cipher.txt
+$ ./monoalpha.py crack cipher.txt
 [...]
                        KEY   ngft   red    mpft   c   csts   wdft   wfreq   len
 OCJXWG-ZMTKFEUP--ADIB-YNH-   12.27   1386.29   0.00  None   6.67   758.27  21
