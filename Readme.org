@@ -1,4 +1,9 @@
 * Monoalpha Solver
+The monoalphabetic cipher is a simple substitution cipher, where each character in a text gets replaced with a new one. Mathematically it is a permutation. Consider the alphabet as a set of 26 characters A to Z. The map that encrypts the text is given by a key with 26 characters, where the first character is the image of A, the second the image of B and so on.
+
+This map preserves statistical properties of languages, which can be used to crack these ciphers. This script aims to do that.
+
+Allthough it works on the given example messages, the results depend heavily on the given parameters and the properties of the cipher text.
 
 ** Usage
 #+begin_src
@@ -40,7 +45,7 @@ INLITERARYTHEORYATEXTISANYOBJECTTHATCANBEREADWHETHERTHISOBJECTISAWORKOFLITERATUR
 Decrytption removes the spaces of the cipher text and prints the decrypted text as one long string.
 
 *** Frequency Analysis
-The main tool to crack the monoalphabetic cipher is to analyze the frequency of letters, bigrams, trigrams and quadgrams in the ciphertext. To analyze a cipher text use.
+The main tool to crack the monoalphabetic cipher is to analyze the frequency of letters, bigrams and trigrams in the ciphertext. To analyze a cipher text use.
 #+begin_src bash
 $ ./monoalpha.py ana cipher.txt
 LETTERS
@@ -75,22 +80,49 @@ oim   | 11
 #+end_src
 
 *** Crack
+To crack the monoalphabetic cipher the script analyzes the frequencies of letters, bigrams, trigrams and quadgrams. Then it maps the most common n-grams in the english language to the most common n-grams found in the cipher text. This is done via a tree search. After that it tries to match words into the partially guessed text. The language data can be found in the data folder.
 
-*** Parameter
-**** Defaults
+#+begin_src bash
+$ ./monoalpha.py ana cipher.txt
+[...]
+                       KEY   ngft   red    mpft   c   csts   wdft   wfreq   len
+OCJXWG-ZMTKFEUP--ADIB-YNH-   12.27   1386.29   0.00  None   6.67   758.27  21
+OCJXWG-ZMTKFEUP--ADI--YNH-   12.27   363.75   0.00  None   7.24   876.22  20
+OCJXWGVZMTKFSUP--ADIB-YNH-   12.27   441.82   0.00  None   7.76   957.40  22
+OCJXWG-ZMTKF-UP--ADIB-YNH-   12.27   363.90   0.00  None   8.60   480.47  20
+OCJXWG-ZMTKF-UP--ADI--YNH-   12.27   191.37   0.00  None   9.45   536.90  19
+OCJXWG-ZMT-FEUP--ADI--YNH-   12.27   127.58   0.00  None   7.35   1036.26  19
+OCJXW--ZMT-F-UP--ADI--YNH-   12.27   71.18   0.00  None   7.68   470.06  17
+
+min: OCJXW--ZMT-F-UP--ADI--YNH-
+
+=== DECRYPT WITH GUESSES ===
+decrypting with minimum guess
+INLITERARYTHEORYATEXTISANYOBJECTTHATCANBEREADWHETHERTHISOBJECTISAWORkOgLITERATbREASTREETSIvNANARRANvEsENTOgBbILDINvSONACITYBLOCkORSTYLESOgCLOTHINvITISACOHERENTSETOgSIvNSTHATTRANSsITSSOsEkINDOgINgORsATIqEsESSAvETHISSETOgSIvNSISCONSIDEREDINTERsSOgTHEINgORsATIqEsESSAvESCONTENTRATHERTHANINTERsSOgITSeHYSICALgORsORTHEsEDIbsINWHICHITISREeRESENTEDWITHINTHEgIELDOgLITERARYCRITICISsT
+#+end_src
+
+Compare the min key with the key generated above!
+
+*NOTE THAT THE SUCCES OF THE CRACK HIGHLY DEPENDS ON THE PARAMETER AND ON THE GIVEN CIPHER TEXT*
+
+**** Parameter
+***** SEARCH_N
+A flag which enables the tree search for N-grams
+***** DEPTH_N
+Defines the number of recursions into the tree. For N=W this referes to the matching of words.
+***** FILTER_BRANCH_N
+A percentage that only includes that portion of the current level for the next recursion.
+***** Defaults
 #+begin_src python
 parameters = {
     "SEARCH_3": True,
     "DEPTH_3": 5,
     "FILTER_BRANCH_3": 1,
-    "FILTER_3": 1,
     "SEARCH_2": True,
     "DEPTH_2": 9,
     "FILTER_BRANCH_2": 0.7,
-    "FILTER_2": 1,
     "SEARCH_1": False,
     "DEPTH_1": 8,
     "FILTER_BRANCH_1": 0.5,
-    "FILTER_1": 1,
     "DEPTH_W": 17}
 #+end_src

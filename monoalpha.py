@@ -1463,9 +1463,9 @@ if __name__ == "__main__":
         "DEPTH_W": 17}
 
     if args.parameter is not None:
-        allowed_parameters = ["SEARCH_3", "DEPTH_3", "FILTER_BRANCH_3", "FILTER_3", "SEARCH_2", \
-                            "DEPTH_2", "FILTER_BRANCH_2", "FILTER_2", "SEARCH_1", "DEPTH_1", \
-                            "FILTER_BRANCH_1", "FILTER_1", "DEPTH_W"]
+        allowed_parameters = ["SEARCH_3", "DEPTH_3", "FILTER_BRANCH_3", "SEARCH_2", \
+                            "DEPTH_2", "FILTER_BRANCH_2", "SEARCH_1", "DEPTH_1", \
+                            "FILTER_BRANCH_1", "DEPTH_W"]
 
         input_parameters = {}
 
@@ -1523,10 +1523,6 @@ if __name__ == "__main__":
         print()
         print("TRIGRAMS")
         for b in trigrams:
-            print(f"{b[0]:5s} | {b[1]:d<}")
-        print()
-        print("QUADGRAMS")
-        for b in quadgrams:
             print(f"{b[0]:5s} | {b[1]:d<}")
         print()
     elif args.action == 'dec':
