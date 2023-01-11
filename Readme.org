@@ -1,7 +1,7 @@
 * Monoalpha Solver
 
 ** Usage
-#+begin_src bash
+#+begin_src
 usage: monoalpha.py [-h] [-d] [-k KEY] [-p [PARAMETER ...]] {crack,ana,dec,enc,keygen} filename
 
 Try to crack the monoalphabetic cipher.
@@ -17,6 +17,64 @@ options:
   -k KEY, --key KEY     key for enc-/decryption.
   -p [PARAMETER ...], --parameter [PARAMETER ...]
 #+end_src
+
+*** keygen
+This mode can be used to generate a valid key and print it.
+#+begin_src bash
+$ ./monoalpha.py keygen message.txt
+OCJXWGVZMTKFSUPERADIBQYNHL
+#+end_src
+Note that, allthough it is not used, a filename needs to be given.
+
+*** Encrypt / Decrypt
+Given a valid key encrypt or decrypt the content of a file.
+#+begin_src bash
+$ ./monoalpha.py -k OCJXWGVZMTKFSUPERADIBQYNHL enc message.txt
+MUFMI WAOAH IZWPA HOIWN IMDOU HPCTW JIIZO IJOUC WAWOX YZWIZ WAIZM DPCTW JIMDO YPAKP GFMIW AOIBA WODIA WWIDM VUOUO AAOUV WSWUI PGCBM FXMUV DPUOJ MIHCF PJKPA DIHFW DPGJF PIZMU VMIMD OJPZW AWUID WIPGD MVUDI ZOIIA OUDSM IDDPS WKMUX PGMUG PASOI MQWSW DDOVW [...]
+#+end_src
+Note that, for encryption any characters that differ from the alphabet (A-Z) are ignored. The cipher text is printed in five character long blocks.
+#+begin_src bash
+$ ./monoalpha.py -k OCJXWGVZMTKFSUPERADIBQYNHL dec cipher.txt
+INLITERARYTHEORYATEXTISANYOBJECTTHATCANBEREADWHETHERTHISOBJECTISAWORKOFLITERATUREASTREETSIGNANARRANGEMENTOFBUILDINGSONACITYBLOCKORSTYLESOFCLOTHINGITISACOHERENTSETOFSIGNSTHATTRANSMITSSOMEKINDOFINFORMATIVEMESSAGETHISSETOFSIGNSISCONSIDEREDINTERMSOFTHEINF [...]
+#+end_src
+Decrytption removes the spaces of the cipher text and prints the decrypted text as one long string.
+
+*** Frequency Analysis
+The main tool to crack the monoalphabetic cipher is to analyze the frequency of letters, bigrams, trigrams and quadgrams in the ciphertext. To analyze a cipher text use.
+#+begin_src bash
+$ ./monoalpha.py ana cipher.txt
+LETTERS
+i     | 153
+w     | 144
+m     | 104
+a     | 88
+u     | 87
+p     | 84
+o     | 81
+[...]
+
+BIGRAMS
+iw    | 36
+iz    | 35
+mu    | 27
+wa    | 25
+im    | 25
+mi    | 24
+zw    | 24
+oi    | 24
+[...]
+
+TRIGRAMS
+izw   | 19
+wui   | 14
+iwa   | 11
+iwn   | 11
+wni   | 11
+oim   | 11
+[...]
+#+end_src
+
+*** Crack
 
 *** Parameter
 **** Defaults
