@@ -1423,12 +1423,29 @@ def crack(cipher,  p = {
 if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(description="Try to crack the monoalphabetic cipher.")
-    parser.add_argument('filename', type=argparse.FileType('r'))
+    parser.add_argument('action', choices=['crack', 'ana', 'dec', 'enc', 'keygen'], help=\
+                        "The mode of of the script")
+    parser.add_argument('filename', type=argparse.FileType('r'), help="input textfile")
     parser.add_argument('-d', '--dev', action='store_true',
                         help="Activates dev mode. The code assumes that the text was encrypted using the trivial key.")
+    parser.add_argument('-k', '--key', help="key for enc-/decryption.")
     parser.add_argument('-p', '--parameter', nargs='*')
 
     args = parser.parse_args()
+
+    if args.key is not None:
+        if not re.match(r"^[A-Z]{26}$", args.key):
+            raise Exception("key must be 26 upper case characters")
+        chars = []
+        for char in args.key:
+            if char not in chars:
+                chars.append(char)
+            else:
+                raise Exception("key can't contain duplicate charaters")
+    else:
+        if args.action == 'enc' or args.action == 'dec':
+            raise Exception("key can't be empty for enc-/decryption")
+
 
     parameters = {
         "SEARCH_3": True,
@@ -1484,12 +1501,39 @@ if __name__ == "__main__":
             parameters[key] = input_parameters[key]
 
 
-    # open message
-    with open("message.txt", "r") as f:
-        cipher = f.read().lower()
+    # open inputfile
+    with args.filename as f:
+        text = f.read().lower()
 
     if args.dev:
         key = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
-        cipher = encrypt(key, cipher).replace(" ","")
+        cipher = encrypt(key, text).replace(" ","")
 
-    crack(cipher, parameters, args.dev)
+    if args.action == 'crack':
+        crack(text, parameters, args.dev)
+    elif args.action == 'ana':
+        letters, bigrams, trigrams, quadgrams = freq_ana(text)
+        print("LETTERS")
+        for l in letters:
+            print(f"{l[0]:5s} | {l[1]:d<}")
+        print()
+        print("BIGRAMS")
+        for b in bigrams:
+            print(f"{b[0]:5s} | {b[1]:d<}")
+        print()
+        print("TRIGRAMS")
+        for b in trigrams:
+            print(f"{b[0]:5s} | {b[1]:d<}")
+        print()
+        print("QUADGRAMS")
+        for b in quadgrams:
+            print(f"{b[0]:5s} | {b[1]:d<}")
+        print()
+    elif args.action == 'dec':
+        print(decrypt(args.key, text))
+    elif args.action == 'enc':
+        print(encrypt(args.key, text))
+    elif args.action == 'keygen':
+        print(permutate_str(ALPHABET))
+    else:
+        print("STH IS WRONG")
