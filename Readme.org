@@ -1,7 +1,7 @@
 * Monoalpha Solver
 
 ** Usage
-#+begin_src bash
+#+begin_src
 usage: monoalpha.py [-h] [-d] [-k KEY] [-p [PARAMETER ...]] {crack,ana,dec,enc,keygen} filename
 
 Try to crack the monoalphabetic cipher.
